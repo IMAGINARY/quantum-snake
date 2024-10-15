@@ -391,6 +391,10 @@
           if (q0 !== circuit.numQubits - 1) {
             // move the first target qubit to the last qubit
             tempCircuit.appendGate("swap", [circuit.numQubits - 1, q0]);
+            if (q1 === circuit.numQubits - 1) {
+              // q1 was the last qubit, but is now at q0's original position
+              q1 = q0;
+            }
           }
           if (q1 !== circuit.numQubits - 2) {
             // move the second target qubit to the second to last qubit
