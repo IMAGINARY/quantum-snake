@@ -13,6 +13,10 @@
         RIGHT: "RIGHT",
       };
 
+      const searchParams = new URLSearchParams(window.location.search);
+      const numQubits = parseInt(searchParams.get("numQubits")) || 2;
+      const numGates = parseInt(searchParams.get("numGates")) || 1;
+
       const BOARD_WIDTH = 50;
       const BOARD_HEIGHT = 40;
 
@@ -38,7 +42,11 @@
           this.directionCandidate = this.direction;
           this.snake = new Snake();
 
-          this.itemManager = new ItemManager(2, 1, this.snake.body);
+          this.itemManager = new ItemManager(
+            numQubits,
+            numGates,
+            this.snake.body
+          );
 
           const keyDirectionMap = {
             ArrowUp: Directions.UP,
