@@ -2,19 +2,11 @@ import QuantumCircuit from 'quantum-circuit';
 import * as math from 'mathjs';
 
 export class ItemManager {
-  // TODO: snakeBody should not be passed here (it's just used to avoid collisions)
-  constructor(
-    numQubits,
-    numGates,
-    snakeBody,
-    boardWidth,
-    boardHeight,
-    blockSize,
-  ) {
-    this.snakeBody = snakeBody;
-    this.boardWidth = boardWidth;
-    this.boardHeight = boardHeight;
-    this.blockSize = blockSize;
+  constructor(game) {
+    this.game = game;
+
+    const config = this.game.config;
+    const { numQubits, numGates } = config;
 
     // Start with qubits 0 and 1 entangled
     this.quantumCircuit = new QuantumCircuit(numQubits);
@@ -267,9 +259,10 @@ export class ItemManager {
   }
 
   getRandomPosition() {
+    const { boardWidth, boardHeight } = this.game.config;
     return {
-      x: Math.floor(Math.random() * this.boardWidth),
-      y: Math.floor(Math.random() * this.boardHeight),
+      x: Math.floor(Math.random() * boardWidth),
+      y: Math.floor(Math.random() * boardHeight),
     };
   }
 
@@ -277,7 +270,7 @@ export class ItemManager {
     return (
       !this.qubitPositions.some((q) => q.x === x && q.y === y) &&
       !this.quantumLogicGates.some((g) => g.x === x && g.y === y) &&
-      !this.snakeBody.some((s) => s.x === x && s.y === y)
+      !this.game.snake.body.some((s) => s.x === x && s.y === y)
     );
   }
 
@@ -288,105 +281,6 @@ export class ItemManager {
         return randomPosition;
       }
     }
-  }
-
-  render(ctx) {
-    ctx.save();
-    this.renderQuantumLogicGates(ctx);
-    ctx.restore();
-
-    ctx.save();
-    this.renderQubits(ctx);
-    ctx.restore();
-  }
-
-  renderQubits(ctx) {
-    ctx.lineWidth = 2;
-    ctx.lineCap = 'round';
-
-    for (let i = 0; i < this.qubitPositions.length; i += 1) {
-      const xStart =
-        this.qubitPositions[i].x * this.blockSize + this.blockSize / 2;
-      const yStart =
-        this.qubitPositions[i].y * this.blockSize + this.blockSize / 2;
-
-      for (let j = i + 1; j < this.qubitPositions.length; j += 1) {
-        const xEnd =
-          this.qubitPositions[j].x * this.blockSize + this.blockSize / 2;
-        const yEnd =
-          this.qubitPositions[j].y * this.blockSize + this.blockSize / 2;
-
-        const percentage = Math.round(
-          this.degreesOfEntanglementMatrix.get([i, j]) * 100,
-        );
-
-        ctx.strokeStyle = `rgba(255, 255, 0, ${percentage / 100})`;
-        ctx.beginPath();
-        ctx.moveTo(xStart, yStart);
-        ctx.lineTo(xEnd, yEnd);
-        ctx.stroke();
-      }
-    }
-
-    ctx.lineWidth = this.blockSize;
-    ctx.lineCap = 'round';
-    ctx.fillStyle = 'white';
-    ctx.font = `${this.blockSize}px sans-serif`;
-
-    const probabilities = this.quantumCircuit.probabilities();
-
-    this.qubitPositions.forEach(({ x: blockX, y: blockY }, i) => {
-      const percentage = Math.round(probabilities[i] * 100);
-      // TODO: Mix color in JS for compatibility with all browsers
-      ctx.strokeStyle = `color-mix(in hsl, red ${percentage}%, green ${
-        100 - percentage
-      }%)`;
-      ctx.beginPath();
-      const x = blockX * this.blockSize + this.blockSize / 2;
-      const y = blockY * this.blockSize + this.blockSize / 2;
-      ctx.moveTo(x, y);
-      ctx.lineTo(x, y);
-      ctx.stroke();
-
-      ctx.fillText(i, x, y);
-    });
-  }
-
-  renderQuantumLogicGates(ctx) {
-    ctx.lineWidth = 2;
-    ctx.lineCap = 'round';
-    ctx.strokeStyle = 'blue';
-    this.quantumLogicGates.forEach(({ x: blockX, y: blockY, qubits }, i) => {
-      const xStart = blockX * this.blockSize + this.blockSize / 2;
-      const yStart = blockY * this.blockSize + this.blockSize / 2;
-
-      qubits.forEach((qubit) => {
-        const xEnd =
-          this.qubitPositions[qubit].x * this.blockSize + this.blockSize / 2;
-        const yEnd =
-          this.qubitPositions[qubit].y * this.blockSize + this.blockSize / 2;
-        ctx.beginPath();
-        ctx.moveTo(xStart, yStart);
-        ctx.lineTo(xEnd, yEnd);
-        ctx.stroke();
-      });
-    });
-
-    ctx.lineWidth = this.blockSize;
-    ctx.lineCap = 'round';
-    ctx.strokeStyle = 'blue';
-    ctx.fillStyle = 'white';
-    ctx.font = `${this.blockSize}px sans-serif`;
-    this.quantumLogicGates.forEach(({ x: blockX, y: blockY, name }, i) => {
-      ctx.beginPath();
-      const x = blockX * this.blockSize + this.blockSize / 2;
-      const y = blockY * this.blockSize + this.blockSize / 2;
-      ctx.moveTo(x, y);
-      ctx.lineTo(x, y);
-      ctx.stroke();
-
-      ctx.fillText(name, x, y);
-    });
   }
 }
 

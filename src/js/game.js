@@ -1,23 +1,19 @@
 import Snake from './snake.js';
 import ItemManager from './item-manager.js';
+import Renderer from './renderer';
 import Directions from './directions.js';
 
-const searchParams = new URLSearchParams(window.location.search);
-const numQubits = parseInt(searchParams.get('numQubits')) || 2;
-const numGates = parseInt(searchParams.get('numGates')) || 1;
-
-const BOARD_WIDTH = 50;
-const BOARD_HEIGHT = 40;
-
-const BLOCK_SIZE = 15;
-
 export class Game {
-  constructor(canvasElement, statusElement) {
+  constructor(canvasElement, statusElement, config) {
     this.statusElement = statusElement;
 
+    this.config = config;
+
+    const { boardWidth, boardHeight, blockSize } = this.config;
+
     this.canvasElement = canvasElement;
-    this.canvasElement.width = BOARD_WIDTH * BLOCK_SIZE;
-    this.canvasElement.height = BOARD_HEIGHT * BLOCK_SIZE;
+    this.canvasElement.width = boardWidth * blockSize;
+    this.canvasElement.height = boardHeight * blockSize;
 
     this.ctx = canvasElement.getContext('2d');
     this.shouldPlay = false;
@@ -28,16 +24,10 @@ export class Game {
 
     this.direction = Directions.RIGHT;
     this.directionCandidate = this.direction;
-    this.snake = new Snake(BOARD_WIDTH, BOARD_HEIGHT, BLOCK_SIZE);
 
-    this.itemManager = new ItemManager(
-      numQubits,
-      numGates,
-      this.snake.body,
-      BOARD_WIDTH,
-      BOARD_HEIGHT,
-      BLOCK_SIZE,
-    );
+    this.snake = new Snake(this);
+    this.itemManager = new ItemManager(this);
+    this.renderer = new Renderer(this);
 
     const keyDirectionMap = {
       ArrowUp: Directions.UP,
@@ -77,7 +67,7 @@ export class Game {
 
     const durationMs = timestampMs - this.lastTimestampMs;
     this.updateState(durationMs);
-    this.render();
+    this.renderer.render();
     this.lastTimestampMs = timestampMs;
 
     if (this.shouldPlay) requestAnimationFrame(this.animate.bind(this));
@@ -161,23 +151,6 @@ export class Game {
 
   collide(listOfPoints, point) {
     return listOfPoints.findIndex((p) => p.x === point.x && p.y === point.y);
-  }
-
-  render() {
-    const ctx = this.ctx;
-
-    ctx.save();
-    ctx.fillStyle = 'black';
-    ctx.fillRect(0, 0, this.canvasElement.width, this.canvasElement.height);
-    ctx.restore();
-
-    ctx.save();
-    this.itemManager.render(ctx);
-    ctx.restore();
-
-    ctx.save();
-    this.snake.render(ctx);
-    ctx.restore();
   }
 }
 
