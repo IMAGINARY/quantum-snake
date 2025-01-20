@@ -1,18 +1,29 @@
-import Directions from './directions.js';
+import { exhaustiveGuard } from './type-helpers';
+import { Directions } from './directions';
+import type { IGame } from './igame';
+import type { Point2 } from './point-2';
 
 const MIN_LENGTH = 2;
 
 export class Snake {
-  constructor(game) {
+  protected game: IGame;
+
+  // TODO: Make protected
+  public body: Point2[];
+
+  protected maxLength: number;
+
+  dead: boolean;
+
+  constructor(game: IGame) {
     this.game = game;
 
     this.body = [{ x: 0, y: 10 }];
     this.maxLength = MIN_LENGTH;
-    this.maxLength = 10;
     this.dead = false;
   }
 
-  move(direction) {
+  move(direction: keyof typeof Directions) {
     const { boardWidth, boardHeight } = this.game.config;
 
     const head = this.body[this.body.length - 1];
@@ -31,6 +42,8 @@ export class Snake {
       case Directions.RIGHT:
         newHead.x += 1;
         break;
+      default:
+        exhaustiveGuard(direction);
     }
 
     newHead.x = (boardWidth + newHead.x) % boardWidth;
@@ -40,7 +53,7 @@ export class Snake {
     this.truncate();
   }
 
-  truncate() {
+  protected truncate() {
     if (this.body.length > this.maxLength) {
       const start = this.body.length - this.maxLength;
       const end = this.body.length;
@@ -48,14 +61,14 @@ export class Snake {
     }
   }
 
-  grow(offset) {
+  grow(offset: number) {
+    // TODO: offset must be positive integer
     this.maxLength += offset;
   }
 
-  shrink(offset) {
+  shrink(offset: number) {
+    // TODO: offset must be positive integer
     this.maxLength = Math.max(this.maxLength - offset, MIN_LENGTH);
     this.truncate();
   }
 }
-
-export default Snake;

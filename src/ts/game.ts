@@ -1,11 +1,43 @@
-import Snake from './snake.js';
-import ItemManager from './item-manager.js';
-import Renderer from './renderer';
-import Directions from './directions.js';
-import Looper from './looper';
+import type { IGame } from './igame';
 
-export class Game {
-  constructor(canvasElement, statusElement, config) {
+import { Snake } from './snake';
+import { ItemManager } from './item-manager';
+import { Renderer } from './renderer';
+import { Directions } from './directions';
+import { Looper } from './looper';
+import type { GameConfig } from './game-config';
+import type { Point2 } from './point-2';
+
+export class Game implements IGame {
+  canvasElement: HTMLCanvasElement;
+
+  ctx: CanvasRenderingContext2D;
+
+  statusElement: HTMLDivElement;
+
+  config: GameConfig;
+
+  durationSinceLastStepMs: number;
+
+  blocksPerSecond: number;
+
+  direction: 'UP' | 'DOWN' | 'LEFT' | 'RIGHT'; // TODO: pull possible values from Directions type
+
+  directionCandidate: typeof this.direction;
+
+  snake: Snake;
+
+  itemManager: ItemManager;
+
+  renderer: Renderer;
+
+  looper: Looper;
+
+  constructor(
+    canvasElement: HTMLCanvasElement,
+    statusElement: HTMLDivElement,
+    config: GameConfig,
+  ) {
     this.statusElement = statusElement;
 
     this.config = config;
@@ -16,7 +48,10 @@ export class Game {
     this.canvasElement.width = boardWidth * blockSize;
     this.canvasElement.height = boardHeight * blockSize;
 
-    this.ctx = canvasElement.getContext('2d');
+    const ctx = this.canvasElement.getContext('2d');
+    if (ctx === null) throw new Error('Canvas rendering context is null');
+    this.ctx = ctx;
+
     this.durationSinceLastStepMs = 0;
 
     this.blocksPerSecond = 10;
@@ -30,14 +65,17 @@ export class Game {
 
     this.looper = new Looper(this.iterate.bind(this));
 
-    const keyDirectionMap = {
+    const keyDirectionMap: Record<
+      string,
+      (typeof Directions)[keyof typeof Directions] | undefined
+    > = {
       ArrowUp: Directions.UP,
       ArrowDown: Directions.DOWN,
       ArrowLeft: Directions.LEFT,
       ArrowRight: Directions.RIGHT,
     };
 
-    const keySpeedMap = {
+    const keySpeedMap: Record<string, number | undefined> = {
       '+': +1,
       '-': -1,
     };
@@ -61,12 +99,12 @@ export class Game {
     if (this.config.autoPlay) this.looper.resume();
   }
 
-  iterate(timestampMs, durationMs) {
+  iterate(timestampMs: DOMHighResTimeStamp, durationMs: number) {
     this.updateState(durationMs);
     this.renderer.render();
   }
 
-  updateState(durationMs) {
+  updateState(durationMs: number) {
     this.durationSinceLastStepMs += durationMs;
     if (this.durationSinceLastStepMs >= 1000 / this.blocksPerSecond) {
       this.updateDirection();
@@ -80,7 +118,7 @@ export class Game {
         steps -= 1;
 
         // Handle collision of the snake with itself
-        const selfCollisionIndex = this.collide(
+        const selfCollisionIndex = Game.collide(
           this.snake.body,
           this.snake.body[this.snake.body.length - 1],
         );
@@ -113,7 +151,7 @@ export class Game {
 
       this.statusElement.innerText = `Snake length: ${
         this.snake.body.length
-      }\nProbabilities: ${this.itemManager.quantumCircuit.probabilities()}\nQubit state:\n${this.itemManager.quantumCircuit.stateAsString()}\nPairwise Concurrence:\n${this.itemManager.degreesOfEntanglementMatrix.toString()}`;
+      }\nProbabilities: ${this.itemManager.quantumCircuit.probabilities().toString()}\nQubit state:\n${this.itemManager.quantumCircuit.stateAsString(false)}\nPairwise Concurrence:\n${this.itemManager.degreesOfEntanglementMatrix.toString()}`;
     }
   }
 
@@ -142,9 +180,7 @@ export class Game {
     }
   }
 
-  collide(listOfPoints, point) {
+  static collide(listOfPoints: Point2[], point: Point2): number {
     return listOfPoints.findIndex((p) => p.x === point.x && p.y === point.y);
   }
 }
-
-export default Game;

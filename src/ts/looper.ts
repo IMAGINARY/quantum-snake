@@ -1,5 +1,20 @@
+export type LooperCallback = (
+  timestampMs: DOMHighResTimeStamp,
+  durationMs: number,
+) => void;
+
 export class Looper {
-  constructor(callback) {
+  protected callback: LooperCallback;
+
+  protected shouldPlay: boolean;
+
+  protected animationFrameId: ReturnType<typeof requestAnimationFrame>;
+
+  protected lastTimestampMs: DOMHighResTimeStamp;
+
+  protected internalTimestampMs: DOMHighResTimeStamp;
+
+  constructor(callback: LooperCallback) {
     this.callback = callback;
     this.shouldPlay = false;
     this.animationFrameId = 0;
@@ -7,12 +22,12 @@ export class Looper {
     this.internalTimestampMs = 0;
   }
 
-  startAnimation(timestampMs) {
+  protected startAnimation(timestampMs: DOMHighResTimeStamp) {
     this.lastTimestampMs = timestampMs;
     this.animate(timestampMs);
   }
 
-  animate(timestampMs) {
+  protected animate(timestampMs: DOMHighResTimeStamp) {
     if (!this.shouldPlay) return;
 
     const durationMs = timestampMs - this.lastTimestampMs;
@@ -58,5 +73,3 @@ export class Looper {
     }
   }
 }
-
-export default Looper;

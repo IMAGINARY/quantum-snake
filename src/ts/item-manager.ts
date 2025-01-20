@@ -1,25 +1,39 @@
+import * as math from 'mathjs';
 import QuantumCircuit from 'quantum-circuit';
-import QCUtils from './qc-utils';
+
+import type { IGame } from './igame';
+
+import * as QCUtils from './qc-utils';
 
 export class ItemManager {
-  constructor(game) {
+  game: IGame;
+
+  quantumCircuit: QuantumCircuit;
+
+  qubitPositions: { x: number; y: number }[];
+
+  quantumLogicGates: { x: number; y: number; name: string; qubits: number[] }[];
+
+  degreesOfEntanglementMatrix: math.Matrix<number>;
+
+  constructor(game: IGame) {
     this.game = game;
 
-    const config = this.game.config;
+    const { config } = this.game;
     const { numQubits, numGates } = config;
 
     // Start with qubits 0 and 1 entangled
     this.quantumCircuit = new QuantumCircuit(numQubits);
-    this.quantumCircuit.appendGate('h', [0]);
-    this.quantumCircuit.appendGate('cx', [0, 1]);
+    this.quantumCircuit.appendGate('h', [0], {});
+    this.quantumCircuit.appendGate('cx', [0, 1], {});
     this.quantumCircuit.run();
 
     this.qubitPositions = new Array(numQubits)
       .fill(0)
-      .map((_, i) => ({ x: 0, y: 0 }));
+      .map(() => ({ x: 0, y: 0 }));
     this.quantumLogicGates = new Array(numGates)
       .fill(0)
-      .map((_, i) => ({ x: 0, y: 0 }));
+      .map(() => ({ x: 0, y: 0, name: '', qubits: [] })); // TODO: make this a valid game item
 
     this.qubitPositions.forEach((_, i) => this.renewQubit(i));
     this.quantumLogicGates.forEach((_, i) => this.renewQuantumLogicGate(i));
@@ -30,7 +44,7 @@ export class ItemManager {
     console.log(this.degreesOfEntanglementMatrix.toString());
   }
 
-  activate(x, y) {
+  activate(x: number, y: number): 'grow' | 'shrink' | 'gate' | null {
     const qubitIndex = this.qubitPositions.findIndex(
       (q) => q.x === x && q.y === y,
     );
@@ -41,7 +55,7 @@ export class ItemManager {
       // Reset qubit to the measured value to update entangled qubits
       this.quantumCircuit.resetQubit(qubitIndex, bit);
 
-      console.log(this.quantumCircuit.stateAsString());
+      console.log(this.quantumCircuit.stateAsString(false));
       console.log(this.quantumCircuit.probabilities());
 
       // Renew the qubit item
@@ -52,7 +66,7 @@ export class ItemManager {
       );
       console.log(this.degreesOfEntanglementMatrix.toString());
 
-      console.log(this.quantumCircuit.stateAsString());
+      console.log(this.quantumCircuit.stateAsString(false));
       console.log(this.quantumCircuit.probabilities());
 
       // Return "grow" or "shrink" depending on measurement result
@@ -75,6 +89,7 @@ export class ItemManager {
       this.quantumCircuit.appendGate(
         this.quantumLogicGates[gateIndex].name,
         this.quantumLogicGates[gateIndex].qubits,
+        {},
       );
 
       // Run circuit using the current qubit values
@@ -85,7 +100,7 @@ export class ItemManager {
       );
       console.log(this.degreesOfEntanglementMatrix.toString());
 
-      console.log(this.quantumCircuit.stateAsString());
+      console.log(this.quantumCircuit.stateAsString(false));
       console.log(this.quantumCircuit.probabilities());
 
       // Renew the quantum logic gate item
@@ -97,7 +112,7 @@ export class ItemManager {
     return null;
   }
 
-  renewQubit(qubitIndex) {
+  renewQubit(qubitIndex: number) {
     if (qubitIndex < 0 || qubitIndex >= this.qubitPositions.length) {
       return;
     }
@@ -112,13 +127,15 @@ export class ItemManager {
     );
   }
 
-  renewQuantumLogicGate(gateIndex) {
+  renewQuantumLogicGate(gateIndex: number) {
     if (gateIndex < 0 || gateIndex >= this.quantumLogicGates.length) {
       return;
     }
 
-    const gatesNamesWithNumOfQubits = { x: 1, h: 1, cx: 2 };
-    const gateNames = Object.keys(gatesNamesWithNumOfQubits);
+    const gatesNamesWithNumOfQubits = { x: 1, h: 1, cx: 2 } as const;
+    const gateNames = Object.keys(
+      gatesNamesWithNumOfQubits,
+    ) as (keyof typeof gatesNamesWithNumOfQubits)[];
     const name = gateNames[Math.floor(Math.random() * gateNames.length)];
 
     const shuffledQubitIndices = this.qubitPositions.map((_, i) => i);
@@ -151,7 +168,7 @@ export class ItemManager {
     };
   }
 
-  isFreePosition(x, y) {
+  isFreePosition(x: number, y: number) {
     return (
       !this.qubitPositions.some((q) => q.x === x && q.y === y) &&
       !this.quantumLogicGates.some((g) => g.x === x && g.y === y) &&
@@ -160,6 +177,8 @@ export class ItemManager {
   }
 
   getRandomFreePosition() {
+    // TODO: Avoid infinite loop
+
     while (true) {
       const randomPosition = this.getRandomPosition();
       if (this.isFreePosition(randomPosition.x, randomPosition.y)) {
@@ -168,5 +187,3 @@ export class ItemManager {
     }
   }
 }
-
-export default ItemManager;

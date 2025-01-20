@@ -3,8 +3,6 @@ const Directions = {
   DOWN: 'DOWN',
   LEFT: 'LEFT',
   RIGHT: 'RIGHT',
-};
+} as const;
 
 export { Directions };
-
-export default Directions;

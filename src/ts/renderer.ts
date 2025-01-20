@@ -1,11 +1,15 @@
+import type { IGame } from './igame';
+
 export class Renderer {
-  constructor(game) {
+  protected game: IGame;
+
+  constructor(game: IGame) {
     this.game = game;
   }
 
   render() {
-    const ctx = this.game.ctx;
-    const canvasElement = this.game.canvasElement;
+    const { ctx } = this.game;
+    const { canvasElement } = this.game;
 
     ctx.save();
     ctx.fillStyle = 'black';
@@ -21,7 +25,7 @@ export class Renderer {
     ctx.restore();
   }
 
-  renderItems(ctx) {
+  renderItems(ctx: CanvasRenderingContext2D) {
     ctx.save();
     this.renderQuantumLogicGates(ctx);
     ctx.restore();
@@ -31,7 +35,7 @@ export class Renderer {
     ctx.restore();
   }
 
-  renderQubits(ctx) {
+  renderQubits(ctx: CanvasRenderingContext2D) {
     const { blockSize } = this.game.config;
     const { qubitPositions, quantumCircuit, degreesOfEntanglementMatrix } =
       this.game.itemManager;
@@ -79,18 +83,18 @@ export class Renderer {
       ctx.lineTo(x, y);
       ctx.stroke();
 
-      ctx.fillText(i, x, y);
+      ctx.fillText(`${i}`, x, y);
     });
   }
 
-  renderQuantumLogicGates(ctx) {
+  renderQuantumLogicGates(ctx: CanvasRenderingContext2D) {
     const { blockSize } = this.game.config;
     const { quantumLogicGates, qubitPositions } = this.game.itemManager;
 
     ctx.lineWidth = 2;
     ctx.lineCap = 'round';
     ctx.strokeStyle = 'blue';
-    quantumLogicGates.forEach(({ x: blockX, y: blockY, qubits }, i) => {
+    quantumLogicGates.forEach(({ x: blockX, y: blockY, qubits }) => {
       const xStart = blockX * blockSize + blockSize / 2;
       const yStart = blockY * blockSize + blockSize / 2;
 
@@ -109,7 +113,7 @@ export class Renderer {
     ctx.strokeStyle = 'blue';
     ctx.fillStyle = 'white';
     ctx.font = `${blockSize}px sans-serif`;
-    quantumLogicGates.forEach(({ x: blockX, y: blockY, name }, i) => {
+    quantumLogicGates.forEach(({ x: blockX, y: blockY, name }) => {
       ctx.beginPath();
       const x = blockX * blockSize + blockSize / 2;
       const y = blockY * blockSize + blockSize / 2;
@@ -121,7 +125,7 @@ export class Renderer {
     });
   }
 
-  renderSnake(ctx) {
+  renderSnake(ctx: CanvasRenderingContext2D) {
     const { blockSize } = this.game.config;
     const { body } = this.game.snake;
 
@@ -142,5 +146,3 @@ export class Renderer {
     });
   }
 }
-
-export default Renderer;

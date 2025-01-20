@@ -31,33 +31,28 @@
     "not OperaMini all"
   ],
   "devDependencies": {
-    "@parcel/macros": "^2.12.0",
-    "@parcel/packager-ts": "^2.12.0",
-    "@parcel/plugin": "^2.12.0",
-    "@parcel/transformer-inline-string": "^2.12.0",
-    "@parcel/transformer-sass": "^2.12.0",
-    "@typescript-eslint/eslint-plugin": "^7.1.1",
-    "@typescript-eslint/parser": "^7.1.1",
-    "@vue/eslint-config-prettier": "^9.0.0",
-    "@vue/eslint-config-typescript": "^13.0.0",
-    "@vue/tsconfig": "^0.5.1",
-    "eslint": "^8.57.0",
-    "eslint-config-airbnb-typescript": "^18.0.0",
-    "eslint-config-prettier": "^9.1.0",
-    "eslint-plugin-compat": "^4.2.0",
-    "eslint-plugin-import": "^2.29.1",
-    "npm-check-updates": "^16.14.15",
+    "@eslint/js": "^9.18.0",
+    "@parcel/macros": "^2.13.3",
+    "@parcel/packager-ts": "^2.13.3",
+    "@parcel/plugin": "^2.13.3",
+    "@parcel/transformer-inline-string": "^2.13.3",
+    "@parcel/transformer-sass": "^2.13.3",
+    "eslint": "^9.18.0",
+    "eslint-config-prettier": "^10.0.1",
+    "npm-check-updates": "^17.1.14",
     "npm-run-all": "^4.1.5",
-    "parcel": "^2.12.0",
+    "parcel": "^2.13.3",
     "parcel-namer-rewrite": "^2.10.3-rc.2",
-    "prettier": "^3.2.5",
-    "rimraf": "^5.0.5",
-    "stylelint": "^16.2.1",
+    "prettier": "^3.4.2",
+    "rimraf": "^6.0.1",
+    "stylelint": "^16.13.2",
     "stylelint-config-html": "^1.1.0",
     "stylelint-config-prettier-scss": "^1.0.0",
-    "stylelint-config-standard": "^36.0.0",
-    "stylelint-config-standard-scss": "^13.0.0",
-    "tsx": "^4.7.1"
+    "stylelint-config-standard": "^37.0.0",
+    "stylelint-config-standard-scss": "^14.0.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3",
+    "typescript-eslint": "^8.21.0"
   },
   "@parcel/resolver-default": {
     "packageExports": true
@@ -66,7 +61,7 @@
     "manualSharedBundles": [
       {
         "name": "vendor",
-        "root": "src/js/main.js",
+        "root": "src/ts/main.ts",
         "assets": [
           "node_modules/**/*"
         ]
@@ -87,15 +82,16 @@
     "build": "parcel build --no-cache --public-url '.' --dist-dir '.'",
     "format": "prettier --write '.'",
     "lint": "npm-run-all -s -c lint:**",
-    "lint:scripts": "eslint src",
+    "lint:scripts": "eslint",
     "lint:styles": "stylelint 'src/{**/*,*}.{css,scss}'",
     "fix": "npm-run-all -s -c fix:**",
-    "fix:scripts": "eslint --fix src",
+    "fix:scripts": "eslint --fix",
     "fix:styles": "stylelint --fix 'src/{**/*,*}.{css,scss}'",
     "check-updates": "npm-check-updates"
   },
   "dependencies": {
     "mathjs": "^14.0.1",
-    "quantum-circuit": "^0.9.227"
+    "quantum-circuit": "^0.9.227",
+    "ts-essentials": "^10.0.4"
   }
 }
