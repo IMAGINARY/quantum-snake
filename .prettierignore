@@ -1,0 +1,8 @@
+.git
+.parcel-cache
+package-lock.json
+node_modules
+/assets
+/dist-dev
+/*.html
+/src/vendor
