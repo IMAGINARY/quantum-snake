@@ -51,6 +51,10 @@ export class Game {
         this.blocksPerSecond + (keySpeedMap[event.key] ?? 0),
       );
     });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === ' ') this.looper.toggle();
+    });
   }
 
   start() {

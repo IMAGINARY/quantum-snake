@@ -49,6 +49,14 @@ export class Looper {
   isPaused() {
     return !this.shouldPlay;
   }
+
+  toggle() {
+    if (this.isPaused()) {
+      this.resume();
+    } else {
+      this.pause();
+    }
+  }
 }
 
 export default Looper;
