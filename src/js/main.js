@@ -8,6 +8,7 @@ const BLOCK_SIZE = 15;
 const searchParams = new URLSearchParams(window.location.search);
 const numQubits = parseInt(searchParams.get('numQubits')) || 2;
 const numGates = parseInt(searchParams.get('numGates')) || 1;
+const autoPlay = searchParams.get('autoPlay') === 'true';
 
 function main() {
   const canvasElement = document.getElementById('gameCanvas');
@@ -19,6 +20,7 @@ function main() {
     blockSize: BLOCK_SIZE,
     numQubits,
     numGates,
+    autoPlay,
   };
 
   const game = new Game(canvasElement, statusElement, config);

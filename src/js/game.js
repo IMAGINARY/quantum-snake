@@ -58,7 +58,7 @@ export class Game {
   }
 
   start() {
-    this.looper.resume();
+    if (this.config.autoPlay) this.looper.resume();
   }
 
   iterate(timestampMs, durationMs) {
