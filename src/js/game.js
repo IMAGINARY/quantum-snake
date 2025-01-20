@@ -2,6 +2,7 @@ import Snake from './snake.js';
 import ItemManager from './item-manager.js';
 import Renderer from './renderer';
 import Directions from './directions.js';
+import Looper from './looper';
 
 export class Game {
   constructor(canvasElement, statusElement, config) {
@@ -16,8 +17,6 @@ export class Game {
     this.canvasElement.height = boardHeight * blockSize;
 
     this.ctx = canvasElement.getContext('2d');
-    this.shouldPlay = false;
-    this.lastTimestampMs = 0;
     this.durationSinceLastStepMs = 0;
 
     this.blocksPerSecond = 10;
@@ -28,6 +27,8 @@ export class Game {
     this.snake = new Snake(this);
     this.itemManager = new ItemManager(this);
     this.renderer = new Renderer(this);
+
+    this.looper = new Looper(this.iterate.bind(this));
 
     const keyDirectionMap = {
       ArrowUp: Directions.UP,
@@ -53,24 +54,12 @@ export class Game {
   }
 
   start() {
-    this.shouldPlay = true;
-    requestAnimationFrame(this.startAnimation.bind(this));
+    this.looper.resume();
   }
 
-  startAnimation(timestampMs) {
-    this.lastTimestampMs = timestampMs;
-    requestAnimationFrame(this.animate.bind(this));
-  }
-
-  animate(timestampMs) {
-    if (!this.shouldPlay) return;
-
-    const durationMs = timestampMs - this.lastTimestampMs;
+  iterate(timestampMs, durationMs) {
     this.updateState(durationMs);
     this.renderer.render();
-    this.lastTimestampMs = timestampMs;
-
-    if (this.shouldPlay) requestAnimationFrame(this.animate.bind(this));
   }
 
   updateState(durationMs) {
@@ -96,7 +85,7 @@ export class Game {
         } else {
           // Snake is dead. Game over.
           this.snake.dead = true;
-          this.shouldPlay = false;
+          this.looper.pause();
           break;
         }
 
