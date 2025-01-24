@@ -77,7 +77,7 @@
   },
   "scripts": {
     "serve": "parcel serve --dist-dir dist-dev",
-    "clean": "rimraf assets src/html/index.html",
+    "clean": "rimraf assets index.html",
     "prebuild": "npm run clean",
     "build": "parcel build --no-cache --public-url '.' --dist-dir '.'",
     "format": "prettier --write '.'",
