@@ -1,4 +1,4 @@
-import * as math from 'mathjs';
+import * as math from './mathjs';
 import QuantumCircuit from 'quantum-circuit';
 
 function stateAsDensityMatrix(

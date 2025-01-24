@@ -1,4 +1,5 @@
-import * as math from 'mathjs';
+import type { Matrix } from './mathjs';
+
 import QuantumCircuit from 'quantum-circuit';
 
 import type { IGame } from './igame';
@@ -14,7 +15,7 @@ export class ItemManager {
 
   quantumLogicGates: { x: number; y: number; name: string; qubits: number[] }[];
 
-  degreesOfEntanglementMatrix: math.Matrix<number>;
+  degreesOfEntanglementMatrix: Matrix<number>;
 
   constructor(game: IGame) {
     this.game = game;
