@@ -1,5 +1,19 @@
+import { assert } from 'ts-essentials';
 import * as math from './mathjs';
 import QuantumCircuit from 'quantum-circuit';
+
+function stateAsStateVector(circuit: QuantumCircuit): math.Complex[] {
+  const stateVector = circuit.state;
+  const dims = math.size(stateVector);
+  assert(Array.isArray(dims) && dims.length === 1);
+  const size = dims[0];
+  assert(Array.isArray(stateVector));
+
+  return new Array(size).fill(0).map((_, i) => {
+    assert(!Array.isArray(stateVector[i]));
+    return { ...stateVector[i] };
+  });
+}
 
 function stateAsDensityMatrix(
   circuit: QuantumCircuit,
@@ -148,5 +162,6 @@ export {
   degreeOfEntanglement,
   concurrence2,
   partialTrace,
+  stateAsStateVector,
   stateAsDensityMatrix,
 };

@@ -4,7 +4,7 @@
  * start using custom mathjs bundles as well.
  */
 
-export type { Matrix, Complex, MathJsChain } from 'mathjs';
+export type { Matrix, Complex, MathJsChain, MathCollection } from 'mathjs';
 import type * as math from 'mathjs';
 
 import {
@@ -19,6 +19,7 @@ import {
   conjDependencies,
   transposeDependencies,
   kronDependencies,
+  sizeDependencies,
   sortDependencies,
   zerosDependencies,
   onesDependencies,
@@ -39,6 +40,7 @@ const {
   conj,
   transpose,
   kron,
+  size,
   sort,
   zeros,
   ones,
@@ -54,6 +56,7 @@ const {
     conjDependencies,
     transposeDependencies,
     kronDependencies,
+    sizeDependencies,
     sortDependencies,
     zerosDependencies,
     onesDependencies,
@@ -70,6 +73,7 @@ const {
   conj: typeof math.conj;
   transpose: typeof math.transpose;
   kron: typeof math.kron;
+  size: typeof math.size;
   sort: typeof math.sort;
   zeros: typeof math.zeros;
   ones: typeof math.ones;
@@ -86,6 +90,7 @@ export {
   conj,
   transpose,
   kron,
+  size,
   sort,
   zeros,
   ones,

@@ -28,6 +28,8 @@ declare module 'quantum-circuit' {
       force?: boolean,
     ): number;
 
+    measureAll(): number[];
+
     clearGates(): void;
 
     appendGate(
