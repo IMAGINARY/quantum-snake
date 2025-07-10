@@ -10,7 +10,7 @@ const BLOCK_SIZE = 15;
 const searchParams = new URLSearchParams(window.location.search);
 const numQubits = parseInt(searchParams.get('numQubits') ?? '2', 10);
 const numGates = parseInt(searchParams.get('numGates') ?? '1', 10);
-const autoPlay = searchParams.get('autoPlay') === 'true';
+const autoPlay = (searchParams.get('autoPlay') ?? 'true') === 'true';
 
 function main() {
   const canvasElement = guardedQuerySelector(HTMLCanvasElement, '#gameCanvas');
