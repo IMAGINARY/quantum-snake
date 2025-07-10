@@ -15,7 +15,6 @@ import {
   multiplyDependencies,
   reDependencies,
   sqrtDependencies,
-  // @ts-expect-error The mathjs type definition misses this module, but it is present in the mathjs source code. TODO: Write bug report.
   eigsDependencies,
   conjDependencies,
   transposeDependencies,
@@ -51,7 +50,6 @@ const {
     multiplyDependencies,
     reDependencies,
     sqrtDependencies,
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     eigsDependencies,
     conjDependencies,
     transposeDependencies,
